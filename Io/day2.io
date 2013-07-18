@@ -95,3 +95,38 @@ Matrix transpose := method(
 matrix21 := matrix12 transpose
 
 ("Does 0, 1 in the original equal 1, 0 in the transposed matrix? " .. ((matrix12 get(0, 1)) == matrix21 get(1, 0))) println
+
+// 7: Write the matrix to a file and read it in
+fileWrite := File open("matrix.dat")
+fileWrite write( matrix12 serialized )	// writes a list, not a matrix
+fileWrite close
+
+// read it back
+matrixRead := Matrix clone appendSeq( doFile("matrix.dat") )	// reading it back requires the list be loaded into a matrix
+
+matrixRead println
+matrixRead type println
+
+// 8: Number Game
+NumberGame := Object clone do (
+  number := Random value(1, 100) floor
+  play := method (
+    input := File standardInput
+	previous := nil
+	("Let's play! Guess a number between 1 and 100! (number is " .. number .. ")") println
+	10 repeat (
+	  guess := input readLine asNumber
+	  if(guess == number, "You win!" println; break)
+	  
+      if(previous isTrue, // if we have a previous guess
+	    if(((number - previous) abs) < ((number - guess) abs),
+		  "Getting colder" println,
+		  "Getting warmer" println),
+		"Try again" println) // no previous guess
+	  previous = guess
+	)
+  )
+)
+
+game := NumberGame clone
+game play
